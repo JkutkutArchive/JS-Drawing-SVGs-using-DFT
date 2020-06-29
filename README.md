@@ -1,2 +1,2 @@
-# JS-SVG-Drawing-using-Fourier-Transform:
+# Drawing SVGs using DFT:
 
