@@ -2,6 +2,8 @@
 // Jkutkut
 // Code based on The Coding Train code:
 // https://thecodingtrain.com/CodingChallenges/130-fourier-transform-drawing.html
+
+
 function dft(f) { // Calculate the DFT of the given function f (f is a array of )
     const F = []; //The DFF of the given function f
     const N = f.length; //Number of discrete coordinates
