@@ -22,15 +22,11 @@ function svgToPoints(fileText){
     var wMax = 0, wMin = Infinity, hMax = 0, hMin = Infinity;
     let text = "";
     for(let t = 0; t < fileText.length; t++){
-        text += fileText[t] + "\n";
+        // text += fileText[t] + "\n";
+        text += fileText[t];
     }
-    console.log(text)
-
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(text, "text/xml");
-    console.log(doc)
-    let path = doc.getElementsByTagName("path")[0];
-    console.log(path)
+    let doc = new DOMParser().parseFromString(text, "text/xml"); //svg as a xml
+    let path = doc.getElementsByTagName("path")[0]; //get the only path on the svg (the first)
     
     for ( var i = 0, l = 600; i < l; i++ ){
         var p = path.getPointAtLength( i/l * path.getTotalLength() );
@@ -46,11 +42,8 @@ function svgToPoints(fileText){
         else if (hMin > p.y){
             hMin = p.y;
         }
-        // console.log(p.x + ", " + p.y);
-        // console.log(wM + ", " + hM);
         points.push(p);
     }
-    console.log(wMax + ", " + hMax);
 
     offset.x = wMin - 10;
     offset.y = hMin - 10;
@@ -63,12 +56,13 @@ function appendFile(file){
         if (file.type != "image"){
             throw "The file must be a svg image";
         }
-        if (file.subtype != "svg" || !RegExp("\.+\\.svg$").test(file.name)){
+        if (file.subtype != "svg+xml" || !RegExp("\.+\\.svg$").test(file.name)){
             throw "The file must be a .svg image, not just an image";
         }
     } catch (error) {
         print("Error");
         print(error);
+        print(file.subtype)
     }
     // if here, the file should be correct
     loadStrings(file.data, svgToPoints);
