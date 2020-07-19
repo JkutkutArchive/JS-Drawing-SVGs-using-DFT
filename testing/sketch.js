@@ -1,4 +1,3 @@
-var points = [];
 var result;
 var file;
 var offset = {x: 0, y: 0};
@@ -15,58 +14,70 @@ function draw(){
  * @param {string[]} fileText -  String with the svg code
  * @returns {object[]} Array with the points of the SVG ({x: float, y: float})
  */
-function svgToPoints(fileText){
+function svgToPoints(fileText, nPointsPath = 600){
     var wMax = 0, wMin = Infinity, hMax = 0, hMin = Infinity; //To calculate the properties of the SVG
     let doc = new DOMParser().parseFromString(fileText, "text/xml"); //svg as a xml
-    let path = doc.getElementsByTagName("path")[0]; //get the only path on the svg (the first)
+    let points = [];
+    let paths = doc.getElementsByTagName("path"); // Array of paths on the svg
+    for (let pi = 0; pi < paths.length; pi++){
+        let path = paths[pi]; //get the pº path
+
+        //Get the points of the path
+        for ( var i = 0; i < nPointsPath; i++ ){
+            let p = path.getPointAtLength(i / nPointsPath * path.getTotalLength());
+            // Update the properties based on this point
+            if (wMax < p.x){
+                wMax = p.x;
+            }
+            else if (wMin > p.x){
+                wMin = p.x;
+            }
+            if (hMax < p.y){
+                hMax = p.y;
+            }
+            else if (hMin > p.y){
+                hMin = p.y;
+            }
+            points.push(p); //add the point
+        }
+    }
+    points.push(points[0]);
+
+    let w = wMax - wMin; //This value is the width of the SVG
+    let h = hMax - hMin; //This value is the height of the SVG
     
-    for ( var i = 0, l = 600; i < l; i++ ){
-        var p = path.getPointAtLength(i / l * path.getTotalLength());
-        if (wMax < p.x){
-            wMax = p.x;
+    // Convert the coordinates origin to the center of the SVG
+    for (let i = 0; i < points.length; i++){
+        points[i] = {
+            x: (points[i].x - wMin) - w * 0.5, 
+            y: (points[i].y - hMin) - h * 0.5
         }
-        else if (wMin > p.x){
-            wMin = p.x;
-        }
-        if (hMax < p.y){
-            hMax = p.y;
-        }
-        else if (hMin > p.y){
-            hMin = p.y;
-        }
-        points.push(p); //add the point
     }
     
     let r = {
-        p: {
-            size: {
-                w: wMax - wMin, 
-                h: hMax - hMin
-            },
-            coord: {
-                x: wMin,
-                y: hMin
-            }
+        p: { // Center: {x: 0, y: 0}
+            width: w,
+            height: h,
         },
-        points: points
+        points: points //Here are the points
     };
 
     return r;
 }
 
 function drawPoints(){
-    let w = result.p.size.w;
-    let h = result.p.size.h;
-    let oX = result.p.coord.x - 10;
-    let oY = result.p.coord.y - 10;
+    let w = result.p.width;
+    let h = result.p.height;
+    let oX = result.p.width * 0.5 + 10;
+    let oY = result.p.height * 0.5 + 10;
     
     createCanvas(w + 20, h + 20);
     background(200);
     stroke(0); // Change the color
-    strokeWeight(3); // Make the points 10 pixels in size
+    strokeWeight(3);
 
     for (let i = 0; i < result.points.length; i++){
-        point(result.points[i].x - oX, result.points[i].y - oY);
+        point(result.points[i].x + oX, result.points[i].y + oY);
     }
 }
 function appendFile(file){
