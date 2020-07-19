@@ -1,5 +1,6 @@
 var points = [];
 var file;
+var offset = {x: 0, y: 0};
 
 
 function setup(){
@@ -12,15 +13,13 @@ function draw(){
         stroke(0); // Change the color
         strokeWeight(3); // Make the points 10 pixels in size
         for (let i = 0; i < points.length; i++){
-            point(points[i].x, points[i].y);
+            point(points[i].x - offset.x, points[i].y - offset.y);
         }
     }
 }
 
 function svgToPoints(fileText){
-    // let w, h;
-    let w = 1000, h = 1000;
-    // try{
+    var wMax = 0, wMin = Infinity, hMax = 0, hMin = Infinity;
     let text = "";
     for(let t = 0; t < fileText.length; t++){
         text += fileText[t] + "\n";
@@ -33,12 +32,29 @@ function svgToPoints(fileText){
     let path = doc.getElementsByTagName("path")[0];
     console.log(path)
     
-    for ( var i=0,l=300; i<l; i++ ){
+    for ( var i = 0, l = 600; i < l; i++ ){
         var p = path.getPointAtLength( i/l * path.getTotalLength() );
-        console.log(p);
+        if (wMax < p.x){
+            wMax = p.x;
+        }
+        else if (wMin > p.x){
+            wMin = p.x;
+        }
+        if (hMax < p.y){
+            hMax = p.y;
+        }
+        else if (hMin > p.y){
+            hMin = p.y;
+        }
+        // console.log(p.x + ", " + p.y);
+        // console.log(wM + ", " + hM);
         points.push(p);
     }
-    createCanvas(w, h);
+    console.log(wMax + ", " + hMax);
+
+    offset.x = wMin - 10;
+    offset.y = hMin - 10;
+    createCanvas(wMax - wMin + 20, hMax - hMin + 20);
 }
 
 function appendFile(file){
