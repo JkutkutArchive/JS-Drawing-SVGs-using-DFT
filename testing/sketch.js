@@ -12,9 +12,12 @@ function draw(){
 /**
  * Given a string with the svg content, returns a array of points.
  * @param {string[]} fileText -  String with the svg code
+ * @param {number} nPointsPath - Number of points to generate. Default: 600
+ * @param {number} sizeX - Optional parameter to set the desired width. If NaN, this is ignored.
+ * @param {number} sizeY - Optional parameter to set the desired height. If NaN, this is ignored.
  * @returns {object[]} Array with the points of the SVG ({x: float, y: float})
  */
-function svgToPoints(fileText, nPointsPath = 600, scale){
+function svgToPoints(fileText, nPointsPath = 600, sizeX, sizeY){
     var wMax = 0, wMin = Infinity, hMax = 0, hMin = Infinity; //To calculate the properties of the SVG
     let doc = new DOMParser().parseFromString(fileText, "text/xml"); //svg as a xml
     let points = [];
@@ -54,15 +57,18 @@ function svgToPoints(fileText, nPointsPath = 600, scale){
         }
     }
     
-    if (scale){ //If the svg must fit on some dimensions, this code will scale it
+    if (sizeX || sizeY){ //If the svg must fit on some dimensions, this code will scale it
+        let wR = (sizeX)? sizeX / w : sizeY / h; // Ratio
+        let hR = (sizeY)? sizeY / h : sizeX / w; // Ratio
+
         for (let i = 0; i < points.length; i++){
             points[i] = {
-                x: points[i].x * scale / w, 
-                y: points[i].y * scale / w
+                x: points[i].x * wR,
+                y: points[i].y * hR
             }
         }
-        h = h * scale / w;
-        w = scale;
+        w *= wR; //The size of the svg has changed
+        h *= hR; //The size of the svg has changed
     }
     let r = {
         p: { // Center: {x: 0, y: 0}
