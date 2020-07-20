@@ -51,6 +51,7 @@ function updateFourier(nPoints = 600){
     y = []; // y coordinates of the ideal figure
     time = 0;
     path = []; //clear previous path
+    drew = false;
     let skip = parseInt(drawing.length / nPoints);
     skip = (skip > 0)? skip : 1;
     for (let i = 0; i < drawing.length; i += skip) {
@@ -80,9 +81,8 @@ function appendFile(file){
     }
     // if here, the file should be correct
     loadStrings(file.data, function(fileStringArr){
-            let result = svgToPoints(fileStringArr.join(""));
+            let result = svgToPoints(fileStringArr.join(""), 600, 500);
             drawing = result.points;
-            drawing.map(function(x){return x / 1000});
             updateFourier();
         });
 }
@@ -90,9 +90,12 @@ function appendFile(file){
 /**
  * Given a string with the svg content, returns a array of points.
  * @param {string[]} fileText -  String with the svg code
+ * @param {number} nPointsPath - Number of points to generate. Default: 600
+ * @param {number} sizeX - Optional parameter to set the desired width. If NaN, this is ignored.
+ * @param {number} sizeY - Optional parameter to set the desired height. If NaN, this is ignored.
  * @returns {object[]} Array with the points of the SVG ({x: float, y: float})
  */
-function svgToPoints(fileText, nPointsPath = 600){
+function svgToPoints(fileText, nPointsPath = 600, sizeX, sizeY){
     var wMax = 0, wMin = Infinity, hMax = 0, hMin = Infinity; //To calculate the properties of the SVG
     let doc = new DOMParser().parseFromString(fileText, "text/xml"); //svg as a xml
     let points = [];
@@ -132,6 +135,19 @@ function svgToPoints(fileText, nPointsPath = 600){
         }
     }
     
+    if (sizeX || sizeY){ //If the svg must fit on some dimensions, this code will scale it
+        let wR = (sizeX)? sizeX / w : sizeY / h; // Ratio
+        let hR = (sizeY)? sizeY / h : sizeX / w; // Ratio
+
+        for (let i = 0; i < points.length; i++){
+            points[i] = {
+                x: points[i].x * wR,
+                y: points[i].y * hR
+            }
+        }
+        w *= wR; //The size of the svg has changed
+        h *= hR; //The size of the svg has changed
+    }
     let r = {
         p: { // Center: {x: 0, y: 0}
             width: w,
@@ -140,8 +156,10 @@ function svgToPoints(fileText, nPointsPath = 600){
         points: points //Here are the points
     };
 
+
     return r;
 }
+
 
 //      VARIABLES:
 var result;
