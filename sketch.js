@@ -66,7 +66,7 @@ function updateFourier(nPoints = 600){
 }
 
 function appendFile(file){
-    print(file.name);
+    // print(file.name);
     try {
         if (file.type != "image"){
             throw "The file must be a svg image";
@@ -181,13 +181,14 @@ var fSelector, fileInput;
 function setup() {
     createCanvas(900, 800);
 
-    fSelector = createSelect();
-    fSelector.position(20, 20);
-    fSelector.option("Train");
+    // fSelector = createSelect();
+    // fSelector.position(20, 20);
+    // fSelector.option("Train");
 
-    fSelector.changed(updateFourier); //When changed the element selected, update
+    // fSelector.changed(updateFourier); //When changed the element selected, update
 
     fileInput = createFileInput(appendFile, false); //When file selected, execute appendFile (only 1 file per selection)
+    fileInput.position(20, 20);
 
     // Fourier code: 
     updateFourier();
