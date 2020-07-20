@@ -14,7 +14,7 @@ function draw(){
  * @param {string[]} fileText -  String with the svg code
  * @returns {object[]} Array with the points of the SVG ({x: float, y: float})
  */
-function svgToPoints(fileText, nPointsPath = 600){
+function svgToPoints(fileText, nPointsPath = 600, scale){
     var wMax = 0, wMin = Infinity, hMax = 0, hMin = Infinity; //To calculate the properties of the SVG
     let doc = new DOMParser().parseFromString(fileText, "text/xml"); //svg as a xml
     let points = [];
@@ -54,6 +54,16 @@ function svgToPoints(fileText, nPointsPath = 600){
         }
     }
     
+    if (scale){ //If the svg must fit on some dimensions, this code will scale it
+        for (let i = 0; i < points.length; i++){
+            points[i] = {
+                x: points[i].x * scale / w, 
+                y: points[i].y * scale / w
+            }
+        }
+        h = h * scale / w;
+        w = scale;
+    }
     let r = {
         p: { // Center: {x: 0, y: 0}
             width: w,
@@ -61,6 +71,7 @@ function svgToPoints(fileText, nPointsPath = 600){
         },
         points: points //Here are the points
     };
+
 
     return r;
 }
@@ -96,7 +107,7 @@ function appendFile(file){
     }
     // if here, the file should be correct
     loadStrings(file.data, function(fileStringArr){
-            result = svgToPoints(fileStringArr.join(""));
+            result = svgToPoints(fileStringArr.join(""), 600, 500);
             drawPoints();
         });
 }
