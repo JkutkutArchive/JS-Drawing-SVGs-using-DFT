@@ -3,6 +3,11 @@
 
 //      FUNCTIONS:
 
+/**
+ * Given the discrete values of the function, returns a array of objects with the freq, amp and phase.
+ * @param {Array} f - Array with the points of the function
+ * @returns {Array} Array of objects following this format: {freq, amp, phase}
+ */
 function dft(f) { // Calculate the DFT of the given function f (f is a array of )
     const F = []; //The DFF of the given function f
     const N = f.length; //Number of discrete coordinates
@@ -25,6 +30,14 @@ function dft(f) { // Calculate the DFT of the given function f (f is a array of 
     return F;
 }
 
+/**
+ * Draw the epiCycles to visualize the DFT
+ * @param {number} x - Start horizontal coordinate
+ * @param {number} y - Start vertical coordinate
+ * @param {number} rotation - The angle to rotate/The starting angle (use to make the vertical and horizontal circles with the same function)
+ * @param {Array} fourier - Array from the function dft 
+ * @returns {object} Returns the vector for the next epiCycle
+ */
 function epiCycles(x, y, rotation, fourier) {
     for (let i = 0; i < fourier.length; i++) {
         let prevx = x, prevy = y; // Center of the current circle 
@@ -46,6 +59,10 @@ function epiCycles(x, y, rotation, fourier) {
     return createVector(x, y); // Return the end of the last radius
 }
 
+/**
+ * Setups all the code to generate the new figure
+ * @param {number} nPoints - The desired amoint of points to use to send to the function dft(f)
+ */
 function updateFourier(nPoints = 600){
     x = []; // x coordinates of the ideal figure
     y = []; // y coordinates of the ideal figure
@@ -65,6 +82,11 @@ function updateFourier(nPoints = 600){
     fourierY.sort((a, b) => b.amp - a.amp);
 }
 
+/**
+ * When a file is selected, this code evaluates the content
+ * @param {file} file 
+ * @throws error if not valid svg
+ */
 function appendFile(file){
     // print(file.name);
     try {
