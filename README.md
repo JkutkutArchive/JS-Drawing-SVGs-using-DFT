@@ -2,7 +2,7 @@
 
 This code enable us to visualize a given SVG file using the DFT (Discrete Fourier Transform)
 
-### *[Use now!](https://jkutkut.github.io/JS-Drawing-SVGs-using-DFT/)*
+### *[Use now!](https://jkutkutarchive.github.io/JS-Drawing-SVGs-using-DFT/)*
 
 ![train example](https://cdn.jsdelivr.net/gh/Jkutkut/JS-Drawing-SVGs-using-DFT@master/resources/train.png)
 
